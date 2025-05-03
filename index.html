@@ -165,6 +165,44 @@
   </style>
 </head>
 <body>
+  <!-- Responsive Navbar -->
+<nav class="bg-gray-900 text-white px-6 py-4 flex items-center justify-between">
+  <div class="text-2xl font-bold">Hyperz Visuals</div>
+  
+  <!-- Hamburger Menu (Mobile) -->
+  <button id="menu-toggle" class="md:hidden focus:outline-none">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </button>
+
+  <!-- Desktop Menu -->
+  <ul id="menu" class="hidden md:flex space-x-6 text-lg">
+    <li><a href="#home" class="hover:text-purple-400">Home</a></li>
+    <li><a href="#services" class="hover:text-purple-400">Services</a></li>
+    <li><a href="#portfolio" class="hover:text-purple-400">Portfolio</a></li>
+    <li><a href="#contact" class="hover:text-purple-400">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Mobile Dropdown -->
+<ul id="mobile-menu" class="md:hidden hidden px-6 pb-4 text-lg bg-gray-900 text-white">
+  <li class="py-2"><a href="#home" class="block hover:text-purple-400">Home</a></li>
+  <li class="py-2"><a href="#services" class="block hover:text-purple-400">Services</a></li>
+  <li class="py-2"><a href="#portfolio" class="block hover:text-purple-400">Portfolio</a></li>
+  <li class="py-2"><a href="#contact" class="block hover:text-purple-400">Contact</a></li>
+</ul>
+
+<!-- Toggle Script -->
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  toggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
+</script>
   <header>
     <img src="logo.png" alt="Hyperz Visuals Logo" class="logo" />
     <h1>HYPERZ visuals</h1>
