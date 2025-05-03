@@ -165,6 +165,97 @@
   </style>
 </head>
 <body>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hyperz Visuals</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    #mobile-menu {
+      transition: all 0.3s ease;
+      transform-origin: top;
+      opacity: 0;
+      transform: scaleY(0);
+    }
+    #mobile-menu.show {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-white">
+
+  <!-- Navbar -->
+  <header class="bg-gray-900 shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo -->
+        <div class="flex-shrink-0 text-2xl font-bold text-purple-500">Hyperz Visuals</div>
+
+        <!-- Desktop Menu -->
+        <nav class="hidden md:flex space-x-8">
+          <a href="#home" class="hover:text-purple-400">Home</a>
+          <a href="#about" class="hover:text-purple-400">About</a>
+          <a href="#portfolio" class="hover:text-purple-400">Portfolio</a>
+          <a href="#contact" class="hover:text-purple-400">Contact</a>
+        </nav>
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden">
+          <button id="menu-toggle" class="focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden hidden px-4 pb-4">
+      <a href="#home" class="block py-2 hover:text-purple-400">Home</a>
+      <a href="#about" class="block py-2 hover:text-purple-400">About</a>
+      <a href="#portfolio" class="block py-2 hover:text-purple-400">Portfolio</a>
+      <a href="#contact" class="block py-2 hover:text-purple-400">Contact</a>
+    </div>
+  </header>
+
+  <!-- Sample Content Sections -->
+  <section id="home" class="h-screen flex items-center justify-center">
+    <h1 class="text-4xl text-purple-400 font-bold">Welcome to Hyperz Visuals</h1>
+  </section>
+  <section id="about" class="h-screen flex items-center justify-center bg-gray-800">
+    <h2 class="text-3xl">About Us</h2>
+  </section>
+  <section id="portfolio" class="h-screen flex items-center justify-center bg-gray-700">
+    <h2 class="text-3xl">Our Work</h2>
+  </section>
+  <section id="contact" class="h-screen flex items-center justify-center bg-gray-600">
+    <h2 class="text-3xl">Get in Touch</h2>
+  </section>
+
+  <!-- Script -->
+  <script>
+    const toggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+
+    toggle.addEventListener('click', () => {
+      menu.classList.toggle('show');
+      if (menu.classList.contains('show')) {
+        menu.classList.remove('hidden');
+      } else {
+        setTimeout(() => menu.classList.add('hidden'), 300);
+      }
+    });
+  </script>
+</body>
+</html>
 </script>
   <header>
     <img src="logo.png" alt="Hyperz Visuals Logo" class="logo" />
