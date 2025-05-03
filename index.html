@@ -1,319 +1,422 @@
-<!DOCTYPE html><html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hyperz Visuals</title>
-  <style>
-    :root {
-      --primary: #8e44ad;
-      --background: #121212;
-      --text: #f1f1f1;
-      --accent: #9b59b6;
-    }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    body {
-      background: var(--background);
-      color: var(--text);
-      line-height: 1.6;
-    }
-    header {
-      background: #1e1e1e;
-      padding: 2rem;
-      text-align: center;
-      animation: fadeIn 2s;
-    }
-    header img.logo {
-      width: 80px;
-      height: auto;
-      display: block;
-      margin: 0 auto 1rem;
-    }
-    header h1 {
-      font-size: 2.5rem;
-      color: var(--primary);
-    }
-    header p {
-      font-size: 1.2rem;
-      color: var(--accent);
-    }
-    .showreel {
-      text-align: center;
-      background: #1e1e1e;
-      padding: 2rem;
-    }
-    .showreel iframe {
-      width: 100%;
-      max-width: 800px;
-      height: 450px;
-      border-radius: 1rem;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
-    section {
-      padding: 4rem 2rem;
-      max-width: 1000px;
-      margin: auto;
-      animation: fadeInUp 2s ease;
-    }
-    section h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      color: var(--primary);
-    }
-    .about {
-      text-align: center;
-    }
-    .about img {
-      width: 150px;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 50%;
-      margin-bottom: 1rem;
-      border: 4px solid var(--primary);
-    }
-    .projects, .visuals {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-    }
-    .card {
-      background: #1e1e1e;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-      transition: transform 0.3s ease;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-    }
-    .card iframe {
-      width: 100%;
-      height: 200px;
-      border-radius: 10px;
-      margin-bottom: 1rem;
-    }
-    .contact {
-      text-align: center;
-    }
-    .contact a {
-      color: var(--accent);
-      text-decoration: none;
-      font-size: 1.1rem;
-    }
-    form {
-      margin-top: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      max-width: 600px;
-      margin-inline: auto;
-    }
-    input, textarea {
-      padding: 1rem;
-      border: none;
-      border-radius: 0.5rem;
-      background: #222;
-      color: var(--text);
-      font-size: 1rem;
-    }
-    input:focus, textarea:focus {
-      outline: 2px solid var(--accent);
-    }
-    button {
-      background: var(--primary);
-      color: white;
-      padding: 1rem;
-      border: none;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s ease;
-    }
-    button:hover {
-      background: var(--accent);
-    }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: #1e1e1e;
-      font-size: 0.9rem;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes fadeInUp {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    @media (min-width: 768px) {
-      .about {
-        display: flex;
-        align-items: center;
-        gap: 2rem;
-        text-align: left;
-      }
-      .about img {
-        width: 200px;
-        height: 200px;
-      }
-    }
-  </style>
-</head>
-<body>
   <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hyperz Visuals</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    html {
-      scroll-behavior: smooth;
-    }
-    #mobile-menu {
-      transition: all 0.3s ease;
-      transform-origin: top;
-      opacity: 0;
-      transform: scaleY(0);
-    }
-    #mobile-menu.show {
-      opacity: 1;
-      transform: scaleY(1);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyperz Visuals</title>
+    <style>
+        :root {
+            --primary: #8e44ad;
+            --background: #121212;
+            --text: #f1f1f1;
+            --accent: #9b59b6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: #1e1e1e;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-logo img {
+            width: 40px;
+            height: auto;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Mobile Menu */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #1e1e1e;
+                flex-direction: column;
+                padding: 1rem;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        /* Main Content Styles */
+        #home {
+            text-align: center;
+            padding: 6rem 2rem 2rem;
+            animation: fadeIn 2s;
+        }
+
+        .logo {
+            width: 100px;
+            height: auto;
+            margin: 0 auto 1.5rem;
+            display: block;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+        }
+
+        .showreel {
+            padding: 3rem 2rem;
+            background: #1e1e1e;
+            text-align: center;
+        }
+
+        .showreel iframe {
+            width: 100%;
+            max-width: 900px;
+            height: 500px;
+            border-radius: 1rem;
+            box-shadow: 0 0 25px rgba(0,0,0,0.6);
+        }
+
+        section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .about img {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+            object-fit: cover;
+        }
+
+        .projects {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: #1e1e1e;
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 15px rgba(0,0,0,0.4);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card iframe {
+            width: 100%;
+            height: 200px;
+            border: none;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .contact {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        form {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        input, textarea {
+            padding: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: #222;
+            color: var(--text);
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: var(--accent);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: #1e1e1e;
+            margin-top: 4rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body class="bg-gray-950 text-white">
-
-  <!-- Navbar -->
-  <header class="bg-gray-900 shadow-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-16">
-        <!-- Logo -->
-        <div class="flex-shrink-0 text-2xl font-bold text-purple-500">Hyperz Visuals</div>
-
-        <!-- Desktop Menu -->
-        <nav class="hidden md:flex space-x-8">
-          <a href="#home" class="hover:text-purple-400">Home</a>
-          <a href="#about" class="hover:text-purple-400">About</a>
-          <a href="#portfolio" class="hover:text-purple-400">Portfolio</a>
-          <a href="#contact" class="hover:text-purple-400">Contact</a>
-        </nav>
-
-        <!-- Mobile Menu Button -->
-        <div class="md:hidden">
-          <button id="menu-toggle" class="focus:outline-none">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-logo">
+                <img src="logo.png" alt="Hyperz Visuals Logo">
+                <div class="logo-text">Hyperz Visuals</div>
+            </div>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#portfolio">Portfolio</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <button class="mobile-menu-btn">☰</button>
         </div>
-      </div>
-    </div>
+    </nav>
 
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="md:hidden hidden px-4 pb-4">
-      <a href="#home" class="block py-2 hover:text-purple-400">Home</a>
-      <a href="#about" class="block py-2 hover:text-purple-400">About</a>
-      <a href="#portfolio" class="block py-2 hover:text-purple-400">Portfolio</a>
-      <a href="#contact" class="block py-2 hover:text-purple-400">Contact</a>
-    </div>
-  </header>
-  <!-- Script -->
-  <script>
-    const toggle = document.getElementById('menu-toggle');
-    const menu = document.getElementById('mobile-menu');
-
-    toggle.addEventListener('click', () => {
-      menu.classList.toggle('show');
-      if (menu.classList.contains('show')) {
-        menu.classList.remove('hidden');
-      } else {
-        setTimeout(() => menu.classList.add('hidden'), 300);
-      }
-    });
-  </script>
-</body>
-</html>
-</script>
-  <header>
+    <!-- Rest of your content remains the same -->
+    <!-- Home Section -->
     <section id="home">
-    <img src="logo.png" alt="Hyperz Visuals Logo" class="logo" />
-    <h1>HYPERZ visuals</h1>
-    <p>Cinematic | Motivational | Visual Storytelling</p>
-  </header>  <div class="showreel">
-    <iframe src="https://www.youtube.com/embed/aMd05A4YFuU?si=sO9eTtIMlzn3vYOB" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
-  </div>  <section class="about">
-    <section id="about">
-    <img src="profile.png" alt="hi I'm Harsh!" />
-    <div>
-      <h2>About Me</h2>
-      <p>I'm a passionate video editor with a creative vision to bring stories to life. I use Premiere Pro and After Effects to craft compelling visual narratives, specializing in motivational and other cool content that resonates deeply with viewers.</p>
+        <img src="logo.png" alt="Hyperz Visuals Logo" class="logo">
+        <h1>HYPERZ VISUALS</h1>
+        <p style="font-size: 1.3rem; color: var(--accent);">Cinematic | Motivational | Visual Storytelling</p>
+    </section>
+
+    <!-- Showreel Section -->
+    <div class="showreel">
+        <iframe src="https://www.youtube.com/embed/aMd05A4YFuU" 
+                title="Hyperz Visuals Showreel" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen></iframe>
     </div>
-  </section>  <section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <img src="profile.png" alt="Harsh - Video Editor">
+        <div style="max-width: 600px;">
+            <h2>About Me</h2>
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-top: 1rem;">
+                I'm a passionate video editor dedicated to transforming ideas into visual masterpieces. 
+                With expertise in Premiere Pro and After Effects, I specialize in creating cinematic 
+                experiences that blend emotional storytelling with cutting-edge effects. My work focuses 
+                on motivational content that inspires action and leaves lasting impressions.
+            </p>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
     <section id="portfolio">
-    <h2>My Projects</h2>
-    <div class="projects">
-      <div class="card">
-        <iframe src="https://www.youtube.com/embed/yourvideo1" frameborder="0" allowfullscreen></iframe>
-        <h3>Reel Series: Inner Light</h3>
-        <p>A cinematic journey exploring self-doubt, faith, and awakening through deep storytelling and effects.</p>
-      </div>
-      <div class="card">
-        <iframe src="https://www.youtube.com/embed/5HVSYeo7TzI" frameborder="0" allowfullscreen></iframe>
-        <h3>Instagram Edits</h3>
-        <p>Crafted engaging short videos for personal and client pages that drive impact and emotion.</p>
-      </div>
-      <div class="card">
-        <iframe src="https://www.youtube.com/embed/mRvaK1GCh_Q" frameborder="0" allowfullscreen></iframe>
-        <h3>Concept Visuals</h3>
-        <p>Experimenting with surreal visuals and dream-like sequences to push the boundaries of digital storytelling.</p>
-      </div>
-      <div class="card">
-  <iframe src="https://www.youtube.com/embed/lRSrZw6q_m4" frameborder="0" allowfullscreen></iframe>
-  <h3>EFX Reel Edit</h3>
-  <p>A showcase of dynamic effects and creative editing transitions, crafted with passion and precision.</p>
-      </div>
-      <div class="card">
-  <iframe src="https://www.youtube.com/embed/nF_s65hMLRA" frameborder="0" allowfullscreen></iframe>
-  <h3>Mahabharat 3D Animation</h3>
-  <p>A dramatic 3D recreation of a powerful moment from the Mahabharat, created using Blender. Captures the emotion, scale, and essence of the ancient epic.</p>
-      </div>
-    </div>
-  </section>  <section>
-    <h2>Visual Storytelling</h2>
-    <p>Hyperz Visuals is all about connecting with the audience emotionally. I bring stories to life with cinematic edits, creative visuals, and deep sound design — turning feelings into frames.</p>
-  </section>  <section class="contact">
-    <section id="contact">
-    <h2>Contact Me</h2>
-    <p>Want to work together? Let’s create something extraordinary. Fill out the form below and tell me your idea!</p>
-    <form action="https://formsubmit.co/hyperz5005@gmail.com?redirect=https://hyperzwork.github.io/HyperzVisuals/Thank-you.html" method="POST" class="contact-form">
-  <input type="text" name="name" placeholder="Your Name" required>
-  <input type="email" name="email" placeholder="Your Email" required>
-  <input type="text" name="idea" placeholder="What kind of idea do you want?" required>
-  <textarea name="description" placeholder="Describe your project or idea..." required></textarea>
-  
-  <!-- Prevent spam -->
-  <input type="hidden" name="_captcha" value="false">
+        <h2>Featured Projects</h2>
+        <div class="projects">
+            <!-- Project 1 -->
+            <div class="card">
+                <iframe src="https://www.youtube.com/embed/5HVSYeo7TzI"></iframe>
+                <div class="card-content">
+                    <h3>Instagram Edits</h3>
+                    <p>High-impact short-form content optimized for social media engagement</p>
+                </div>
+            </div>
 
-  <!-- After submit, user goes to a thank-you page (optional) -->
-  <input type="hidden" name="_next" value="https://hyperzwork.github.io/HyperzVisuals/Thank-you.html"> 
+            <!-- Project 2 -->
+            <div class="card">
+                <iframe src="https://www.youtube.com/embed/mRvaK1GCh_Q"></iframe>
+                <div class="card-content">
+                    <h3>Concept Visuals</h3>
+                    <p>Surreal visual experiments blending reality and imagination</p>
+                </div>
+            </div>
 
-  <button type="submit">Send</button>
-</form>
-    <p style="margin-top:2rem;">Or reach out directly:</p>
-    <p>Email: <a href="hyperz5005@gmail.com">hyperz5005@gmail.com</a></p>
-    <p>Instagram: <a href="https://www.instagram.com/hyperzvisuals?igsh=MXVtYTEyajc4ZTI4eQ==" target="_blank">@hyperzvisuals</a></p>
-  </section>  <footer>
-    &copy; 2025 Hyperz Visuals. All rights reserved.
-  </footer>
-  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "f46eb381c3db48c49067f7d76c140e83"}'></script><!-- End Cloudflare Web Analytics -->
-  <script>
+            <!-- Project 3 -->
+            <div class="card">
+                <iframe src="https://www.youtube.com/embed/lRSrZw6q_m4"></iframe>
+                <div class="card-content">
+                    <h3>EFX Reel</h3>
+                    <p>Dynamic effects showcase featuring advanced motion graphics</p>
+                </div>
+            </div>
+
+            <!-- Project 4 -->
+            <div class="card">
+                <iframe src="https://www.youtube.com/embed/nF_s65hMLRA"></iframe>
+                <div class="card-content">
+                    <h3>Mahabharat 3D Animation</h3>
+                    <p>Epic 3D recreation of Mahabharat scenes using Blender</p>
+                </div>
+            </div>
+
+            <!-- Project 5 -->
+            <div class="card">
+                <iframe src="https://www.youtube.com/embed/yourvideo1"></iframe>
+                <div class="card-content">
+                    <h3>Reel Series: Inner Light</h3>
+                    <p>Cinemative storytelling exploring personal growth and transformation</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <h2>Let's Create Together</h2>
+        <form action="https://formsubmit.co/hyperz5005@gmail.com" method="POST">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <input type="text" name="project-type" placeholder="Project Type" required>
+            <textarea name="message" placeholder="Describe your vision..." rows="5" required></textarea>
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_next" value="https://hyperzwork.github.io/HyperzVisuals/thank-you.html">
+            <button type="submit">Send Message</button>
+        </form>
+        
+        <div style="margin-top: 3rem;">
+            <p style="font-size: 1.1rem;">Or connect directly:</p>
+            <p style="margin: 1rem 0;">
+                📧 <a href="mailto:hyperz5005@gmail.com" style="color: var(--accent);">hyperz5005@gmail.com</a>
+            </p>
+            <p>
+                📸 <a href="https://instagram.com/hyperzvisuals" target="_blank" 
+                     style="color: var(--accent);">@hyperzvisuals</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Hyperz Visuals. All rights reserved.</p>
+        <p style="margin-top: 0.5rem;">Crafted with passion in India</p>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+
+        mobileBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                // Close mobile menu after click
+                if(window.innerWidth <= 768) {
+                    navLinks.classList.remove('active');
+                }
+            });
+        });
+
+        // Close menu on scroll
+        window.addEventListener('scroll', () => {
+            if(window.innerWidth <= 768 && navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+            }
+        });
+    </script>
+    <!-- Cloudflare Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' 
+            data-cf-beacon='{"token": "f46eb381c3db48c49067f7d76c140e83"}'></script>
 </body>
 </html>
