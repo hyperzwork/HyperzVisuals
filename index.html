@@ -377,40 +377,37 @@
 </script>
     </style>
 </head>
-  <!-- Firebase App (core) -->
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
-<!-- Firebase Authentication -->
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js"></script>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-<script>
-  // TODO: Replace with your Firebase config
   const firebaseConfig = {
-  apiKey: "AIzaSyBVPwQE9ovzcYJMsGQnndyjYiZcNjpv4-k",
-  authDomain: "hyperzhq-f1910.firebaseapp.com",
-  projectId: "hyperzhq-f1910",
-  storageBucket: "hyperzhq-f1910.firebasestorage.app",
-  messagingSenderId: "454289109507",
-  appId: "1:454289109507:web:4e6f0b4723145ac7591436"
-};
+    apiKey: "AIzaSyBVPwQE9ovzcYJMsGQnndyjYiZcNjpv4-k",
+    authDomain: "hyperzhq-f1910.firebaseapp.com",
+    projectId: "hyperzhq-f1910",
+    storageBucket: "hyperzhq-f1910.appspot.com",
+    messagingSenderId: "454289109507",
+    appId: "1:454289109507:web:4e6f0b4723145ac7591436"
+  };
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-  // Simple email-based login logic
-  function loginTeamMember() {
+  // This will run when you click "Team Login"
+  window.loginTeamMember = function () {
     const email = prompt("Enter your team email:");
     const password = prompt("Enter your password:");
 
-    auth.signInWithEmailAndPassword(email, password)
+    signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // redirect to HQ dashboard
+        // Redirect to HQ portal on success
         window.location.href = "https://hyperzwork.github.io/HyperzVisuals/hyperzHQ.html";
       })
       .catch((error) => {
         alert("Login failed: " + error.message);
       });
-  }
-</script>
+  };
+  </script>
 <body>
     <!-- Navigation -->
     <nav class="navbar">
