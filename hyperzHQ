@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hyperz HQ Portal</title>
+  <style>
+    body {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f10; color: white; display: flex; height: 100vh; overflow: hidden;
+    }
+    .sidebar {
+      width: 240px; background: #1a1a1f; padding: 20px; display: flex; flex-direction: column; border-right: 2px solid #2e2e35;
+    }
+    .sidebar h2 { color: #9b59b6; margin-bottom: 30px; }
+    .sidebar a {
+      color: #ccc; text-decoration: none; padding: 10px; border-radius: 8px; margin-bottom: 10px;
+      transition: background 0.2s ease;
+    }
+    .sidebar a:hover { background: #292933; }
+    .main {
+      flex: 1; padding: 20px; display: flex; flex-direction: column;
+    }
+    .header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+    }
+    .status { font-size: 14px; color: #8eff8e; }
+    .chat-box {
+      flex: 1; background: #1a1a1f; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; overflow: hidden;
+    }
+    .messages {
+      flex: 1; overflow-y: auto; margin-bottom: 10px;
+    }
+    .messages p {
+      margin: 8px 0; padding: 8px 12px; background: #2e2e35; border-radius: 8px; width: fit-content; max-width: 80%;
+    }
+    .input-area {
+      display: flex; gap: 10px;
+    }
+    .input-area input {
+      flex: 1; padding: 10px; border-radius: 8px; border: none; outline: none; background: #2e2e35; color: white;
+    }
+    .input-area button {
+      background: #9b59b6; border: none; padding: 10px 15px; color: white; border-radius: 8px; cursor: pointer;
+    }
+    .input-area button:hover { background: #833db1; }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Hyperz HQ</h2>
+    <a href="#">Dashboard</a>
+    <a href="#">Meeting Room</a>
+    <a href="#">Team Chat</a>
+    <a href="#">Tasks</a>
+    <a href="#">Settings</a>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <h1>Welcome, Team</h1>
+      <div class="status" id="status">● Offline</div>
+    </div>
+
+    <div class="chat-box">
+      <div class="messages" id="messages">
+        <p><strong>Oracle:</strong> Welcome to the HQ Portal.</p>
+      </div>
+      <div class="input-area">
+        <input type="text" id="chatInput" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="startVoice()">Voice</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    // TODO: Replace with your actual config
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_ID",
+      appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const db = firebase.database();
+    const messagesRef = db.ref("messages");
+    const statusEl = document.getElementById("status");
+
+    // Auto login for testing (replace with actual auth flow)
+    auth.signInAnonymously().catch(console.error);
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        const uid = user.uid;
+        const userStatusRef = db.ref("/status/" + uid);
+        userStatusRef.set("online");
+        userStatusRef.onDisconnect().set("offline");
+        statusEl.textContent = "● Online";
+        statusEl.style.color = "#8eff8e";
+
+        // Listen for messages
+        messagesRef.on("child_added", snapshot => {
+          const msg = snapshot.val();
+          const p = document.createElement("p");
+          p.innerHTML = `<strong>${msg.user}:</strong> ${msg.text}`;
+          document.getElementById("messages").appendChild(p);
+          document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+        });
+      }
+    });
+
+    function sendMessage() {
+      const input = document.getElementById("chatInput");
+      const text = input.value.trim();
+      if (text === "") return;
+      messagesRef.push({ user: "Team", text });
+      input.value = "";
+    }
+
+    function startVoice() {
+      alert("Voice feature coming soon!");
+    }
+  </script>
+</body>
+</html>
