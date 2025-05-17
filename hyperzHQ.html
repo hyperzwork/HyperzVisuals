@@ -5,132 +5,239 @@
   <title>Hyperz HQ Portal</title>
   <style>
     body {
-      margin: 0; padding: 0; box-sizing: border-box;
+      margin: 0; padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #0f0f10; color: white; display: flex; height: 100vh; overflow: hidden;
+      background: #0f0f10; color: white;
+      display: flex; height: 100vh; overflow: hidden;
     }
+
     .sidebar {
-      width: 240px; background: #1a1a1f; padding: 20px; display: flex; flex-direction: column; border-right: 2px solid #2e2e35;
+      width: 240px; background: #1a1a1f;
+      padding: 20px; display: flex; flex-direction: column;
+      border-right: 2px solid #2e2e35;
     }
+
     .sidebar h2 { color: #9b59b6; margin-bottom: 30px; }
     .sidebar a {
-      color: #ccc; text-decoration: none; padding: 10px; border-radius: 8px; margin-bottom: 10px;
-      transition: background 0.2s ease;
+      color: #ccc; text-decoration: none;
+      padding: 10px; border-radius: 8px; margin-bottom: 10px;
+      transition: background 0.2s ease; cursor: pointer;
     }
-    .sidebar a:hover { background: #292933; }
+
+    .sidebar a:hover, .sidebar a.active {
+      background: #292933; color: #fff;
+    }
+
     .main {
-      flex: 1; padding: 20px; display: flex; flex-direction: column;
+      flex: 1; padding: 20px; display: flex;
+      flex-direction: column;
     }
+
     .header {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
     }
+
     .status { font-size: 14px; color: #8eff8e; }
-    .chat-box {
-      flex: 1; background: #1a1a1f; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; overflow: hidden;
+
+    .section {
+      display: none;
+      flex: 1;
+      overflow: auto;
     }
+
+    .section.active { display: block; }
+
     .messages {
-      flex: 1; overflow-y: auto; margin-bottom: 10px;
+      max-height: 60vh;
+      overflow-y: auto; margin-bottom: 10px;
     }
+
     .messages p {
-      margin: 8px 0; padding: 8px 12px; background: #2e2e35; border-radius: 8px; width: fit-content; max-width: 80%;
+      margin: 8px 0; padding: 8px 12px;
+      background: #2e2e35;
+      border-radius: 8px; width: fit-content;
+      max-width: 80%;
     }
+
     .input-area {
       display: flex; gap: 10px;
     }
+
     .input-area input {
-      flex: 1; padding: 10px; border-radius: 8px; border: none; outline: none; background: #2e2e35; color: white;
+      flex: 1; padding: 10px; border-radius: 8px;
+      border: none; outline: none;
+      background: #2e2e35; color: white;
     }
+
     .input-area button {
-      background: #9b59b6; border: none; padding: 10px 15px; color: white; border-radius: 8px; cursor: pointer;
+      background: #9b59b6;
+      border: none; padding: 10px 15px;
+      color: white; border-radius: 8px;
+      cursor: pointer;
     }
-    .input-area button:hover { background: #833db1; }
+
+    .card {
+      background: #1f1f24;
+      padding: 20px; border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px #00000055;
+    }
+
+    .task-item {
+      margin-bottom: 10px;
+      padding: 8px;
+      background: #2a2a33;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
   <div class="sidebar">
     <h2>Hyperz HQ</h2>
-    <a href="#">Dashboard</a>
-    <a href="#">Meeting Room</a>
-    <a href="#">Team Chat</a>
-    <a href="#">Tasks</a>
-    <a href="#">Settings</a>
+    <a class="tab active" data-tab="dashboard">Dashboard</a>
+    <a class="tab" data-tab="meeting">Meeting Room</a>
+    <a class="tab" data-tab="chat">Team Chat</a>
+    <a class="tab" data-tab="tasks">Tasks</a>
+    <a class="tab" data-tab="settings">Settings</a>
   </div>
 
   <div class="main">
     <div class="header">
       <h1>Welcome, Team</h1>
-      <div class="status" id="status">● Offline</div>
+      <div class="status" id="status">● Connecting...</div>
     </div>
 
-    <div class="chat-box">
-      <div class="messages" id="messages">
-        <p><strong>Oracle:</strong> Welcome to the HQ Portal.</p>
+    <div class="section active" id="dashboard">
+      <div class="card">
+        <h3>Activity Summary</h3>
+        <p>Chats, meetings and tasks overview will appear here.</p>
       </div>
-      <div class="input-area">
-        <input type="text" id="chatInput" placeholder="Type a message..." />
-        <button onclick="sendMessage()">Send</button>
-        <button onclick="startVoice()">Voice</button>
+    </div>
+
+    <div class="section" id="meeting">
+      <div class="card">
+        <h3>Upcoming Meetings</h3>
+        <ul>
+          <li>Team sync – Monday 10AM</li>
+          <li>Client review – Wednesday 4PM</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section" id="chat">
+      <div class="card">
+        <div class="messages" id="messages">
+          <p><strong>Oracle:</strong> Welcome to the HQ Portal.</p>
+        </div>
+        <div class="input-area">
+          <input type="text" id="chatInput" placeholder="Type a message..." />
+          <button onclick="sendMessage()">Send</button>
+          <button onclick="startVoice()">Voice</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="tasks">
+      <div class="card">
+        <h3>Team Tasks</h3>
+        <div id="taskList"></div>
+        <div class="input-area" style="margin-top:10px;">
+          <input id="taskInput" placeholder="New Task..." />
+          <button onclick="addTask()">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="settings">
+      <div class="card">
+        <h3>Settings</h3>
+        <p>Dark Mode: <input type="checkbox" disabled checked></p>
+        <p><button onclick="alert('Logged out')">Logout</button></p>
       </div>
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    import { getDatabase, ref, push, onChildAdded, set, onDisconnect } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
-  <script>
-    // TODO: Replace with your actual config
     const firebaseConfig = {
-  apiKey: "AIzaSyBVPwQE9ovzcYJMsGQnndyjYiZcNjpv4-k",
-  authDomain: "hyperzhq-f1910.firebaseapp.com",
-  databaseURL: "https://hyperzhq-f1910-default-rtdb.firebaseio.com",
-  projectId: "hyperzhq-f1910",
-  storageBucket: "hyperzhq-f1910.appspot.com",
-  messagingSenderId: "454289109507",
-  appId: "1:454289109507:web:4e6f0b4723145ac7591436"
-};
-    firebase.initializeApp(firebaseConfig);
+      apiKey: "AIzaSyBVPwQE9ovzcYJMsGQnndyjYiZcNjpv4-k",
+      authDomain: "hyperzhq-f1910.firebaseapp.com",
+      databaseURL: "https://hyperzhq-f1910-default-rtdb.firebaseio.com",
+      projectId: "hyperzhq-f1910",
+      storageBucket: "hyperzhq-f1910.appspot.com",
+      messagingSenderId: "454289109507",
+      appId: "1:454289109507:web:4e6f0b4723145ac7591436"
+    };
 
-    const auth = firebase.auth();
-    const db = firebase.database();
-    const messagesRef = db.ref("messages");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    const messagesRef = ref(db, "messages");
+
     const statusEl = document.getElementById("status");
+    const messagesBox = document.getElementById("messages");
 
-    // Auto login for testing (replace with actual auth flow)
-    auth.signInAnonymously().catch(console.error);
+    signInAnonymously(auth).catch(console.error);
 
-    auth.onAuthStateChanged(user => {
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         const uid = user.uid;
-        const userStatusRef = db.ref("/status/" + uid);
-        userStatusRef.set("online");
-        userStatusRef.onDisconnect().set("offline");
+        const statusRef = ref(db, `status/${uid}`);
+        set(statusRef, "online");
+        onDisconnect(statusRef).set("offline");
+
         statusEl.textContent = "● Online";
         statusEl.style.color = "#8eff8e";
 
-        // Listen for messages
-        messagesRef.on("child_added", snapshot => {
-          const msg = snapshot.val();
-          const p = document.createElement("p");
-          p.innerHTML = `<strong>${msg.user}:</strong> ${msg.text}`;
-          document.getElementById("messages").appendChild(p);
-          document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+        onChildAdded(messagesRef, (snapshot) => {
+          const { user, text } = snapshot.val();
+          const msg = document.createElement("p");
+          msg.innerHTML = `<strong>${user}:</strong> ${text}`;
+          messagesBox.appendChild(msg);
+          messagesBox.scrollTop = messagesBox.scrollHeight;
         });
       }
     });
 
-    function sendMessage() {
+    window.sendMessage = function () {
       const input = document.getElementById("chatInput");
       const text = input.value.trim();
-      if (text === "") return;
-      messagesRef.push({ user: "Team", text });
+      if (!text) return;
+      push(messagesRef, { user: "Team", text });
       input.value = "";
-    }
+    };
 
-    function startVoice() {
-      alert("Voice feature coming soon!");
-    }
+    window.startVoice = function () {
+      alert("Voice chat coming soon, boss!");
+    };
+
+    window.addTask = function () {
+      const taskInput = document.getElementById("taskInput");
+      const task = taskInput.value.trim();
+      if (!task) return;
+      const taskList = document.getElementById("taskList");
+      const div = document.createElement("div");
+      div.className = "task-item";
+      div.textContent = task;
+      taskList.appendChild(div);
+      taskInput.value = "";
+    };
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        const id = tab.dataset.tab;
+        document.querySelectorAll(".section").forEach(sec => {
+          sec.classList.remove("active");
+        });
+        document.getElementById(id).classList.add("active");
+      });
+    });
   </script>
 </body>
 </html>
