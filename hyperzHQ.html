@@ -90,6 +90,11 @@
       background: #2a2a33;
       border-radius: 6px;
     }
+
+    #debug {
+      background: #111; padding: 10px; font-size: 12px;
+      color: #0f0; max-height: 100px; overflow-y: auto;
+    }
   </style>
 </head>
 <body>
@@ -156,6 +161,8 @@
         <p><button onclick="alert('Logged out')">Logout</button></p>
       </div>
     </div>
+
+    <div id="debug"></div>
   </div>
 
   <script type="module">
@@ -181,7 +188,13 @@
     const statusEl = document.getElementById("status");
     const messagesBox = document.getElementById("messages");
 
-    signInAnonymously(auth).catch(console.error);
+    function debug(msg) {
+      const log = document.getElementById("debug");
+      log.innerHTML += "<div>" + msg + "</div>";
+      log.scrollTop = log.scrollHeight;
+    }
+
+    signInAnonymously(auth).catch(e => debug("Sign-in failed: " + e.message));
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -199,6 +212,7 @@
           msg.innerHTML = `<strong>${user}:</strong> ${text}`;
           messagesBox.appendChild(msg);
           messagesBox.scrollTop = messagesBox.scrollHeight;
+          debug("New message received: " + text);
         });
       }
     });
@@ -206,8 +220,17 @@
     window.sendMessage = function () {
       const input = document.getElementById("chatInput");
       const text = input.value.trim();
-      if (!text) return;
-      push(messagesRef, { user: "Team", text });
+      if (!text) {
+        debug("No message entered.");
+        return;
+      }
+
+      debug("Sending message: " + text);
+
+      push(messagesRef, { user: "Team", text })
+        .then(() => debug("Message pushed."))
+        .catch((err) => debug("Push failed: " + err.message));
+
       input.value = "";
     };
 
