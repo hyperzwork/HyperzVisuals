@@ -157,6 +157,21 @@
           <li>Client review – Wednesday 4PM</li>
         </ul>
       </div>
+      <div id="meeting-area" style="display:none; background:#1e1e1e; border-radius:12px; padding:20px; margin-top:20px;">
+  <h3 style="color:white;">Hyperz Meeting Room</h3>
+  <div style="margin:10px 0;">
+    <input id="meeting-link" value="" readonly style="width:80%; padding:8px; border-radius:8px;" />
+    <button onclick="copyMeetingLink()" style="padding:8px 12px; margin-left:10px;">Copy Link</button>
+  </div>
+  <div id="video-grid" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); background:#121212; border-radius:12px; padding:10px;"></div>
+  <div style="margin-top:15px; text-align:center;">
+    <button id="startMeetingBtn">Start Meeting</button>
+    <button id="toggleMicBtn" disabled>Mute Mic</button>
+    <button id="toggleCamBtn" disabled>Mute Cam</button>
+    <button id="leaveMeetingBtn" disabled>Leave</button>
+  </div>
+</div>
+<audio id="joinSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg" preload="auto"></audio>
     </div>
 
     <div class="section" id="chat">
@@ -355,6 +370,181 @@ taskRef.on('value', (snapshot) => {
   document.getElementById('taskDone').innerText = done;
   document.getElementById('taskPending').innerText = total - done;
 });
+    const meetingArea = document.getElementById('meeting-area');
+const videoGrid = document.getElementById('video-grid');
+const startMeetingBtn = document.getElementById('startMeetingBtn');
+const toggleMicBtn = document.getElementById('toggleMicBtn');
+const toggleCamBtn = document.getElementById('toggleCamBtn');
+const leaveMeetingBtn = document.getElementById('leaveMeetingBtn');
+const meetingLinkInput = document.getElementById('meeting-link');
+const joinSound = document.getElementById('joinSound');
+
+let localStream = null;
+let peerConnections = {};
+let micEnabled = true;
+let camEnabled = true;
+let userId = firebase.auth().currentUser?.uid || 'user_' + Math.floor(Math.random() * 999999);
+let displayName = firebase.auth().currentUser?.email?.split('@')[0] || 'Guest';
+
+const roomRef = firebase.database().ref('meetingRooms/hyperz_meeting_room/participants');
+const signalRef = firebase.database().ref(`meetingSignals`);
+
+function addVideoStream(id, stream, name, isLocal = false) {
+  if (document.getElementById('vid_' + id)) return;
+  const wrapper = document.createElement('div');
+  wrapper.id = 'vid_' + id;
+  wrapper.style.position = 'relative';
+
+  const video = document.createElement('video');
+  video.srcObject = stream;
+  video.autoplay = true;
+  video.playsInline = true;
+  video.style.width = '100%';
+  video.style.borderRadius = '12px';
+  if (isLocal) video.muted = true;
+
+  const label = document.createElement('div');
+  label.textContent = name;
+  label.style.position = 'absolute';
+  label.style.bottom = '6px';
+  label.style.left = '8px';
+  label.style.background = '#000000aa';
+  label.style.padding = '2px 6px';
+  label.style.borderRadius = '6px';
+  label.style.fontSize = '14px';
+  label.style.color = '#fff';
+
+  wrapper.appendChild(video);
+  wrapper.appendChild(label);
+  videoGrid.appendChild(wrapper);
+}
+
+function removeVideoStream(id) {
+  const el = document.getElementById('vid_' + id);
+  if (el) el.remove();
+}
+
+function copyMeetingLink() {
+  navigator.clipboard.writeText(window.location.href + "#meeting");
+  alert("Meeting link copied!");
+}
+
+startMeetingBtn.onclick = async () => {
+  meetingArea.style.display = 'block';
+  meetingLinkInput.value = window.location.href + "#meeting";
+
+  startMeetingBtn.disabled = true;
+  toggleMicBtn.disabled = false;
+  toggleCamBtn.disabled = false;
+  leaveMeetingBtn.disabled = false;
+
+  localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  addVideoStream(userId, localStream, displayName, true);
+
+  const myRef = roomRef.child(userId);
+  myRef.set({ name: displayName });
+  myRef.onDisconnect().remove();
+
+  roomRef.on('child_added', snap => {
+    const peerId = snap.key;
+    const peerName = snap.val().name;
+    if (peerId === userId || peerConnections[peerId]) return;
+
+    joinSound.play();
+
+    const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+    peerConnections[peerId] = pc;
+
+    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+    pc.onicecandidate = e => {
+      if (e.candidate) {
+        signalRef.child(`${userId}/${peerId}`).push({ type: 'ice', candidate: e.candidate });
+      }
+    };
+
+    pc.ontrack = e => addVideoStream(peerId, e.streams[0], peerName);
+
+    pc.createOffer().then(offer => {
+      pc.setLocalDescription(offer);
+      signalRef.child(`${peerId}/${userId}`).push({ type: 'offer', sdp: offer });
+    });
+  });
+
+  roomRef.on('child_removed', snap => {
+    const peerId = snap.key;
+    if (peerConnections[peerId]) {
+      peerConnections[peerId].close();
+      delete peerConnections[peerId];
+      removeVideoStream(peerId);
+    }
+  });
+
+  signalRef.child(userId).on('child_added', snap => {
+    const fromId = snap.ref.parent.key;
+    const data = snap.val();
+    if (!peerConnections[fromId]) {
+      const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+      peerConnections[fromId] = pc;
+
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+      pc.onicecandidate = e => {
+        if (e.candidate) {
+          signalRef.child(`${userId}/${fromId}`).push({ type: 'ice', candidate: e.candidate });
+        }
+      };
+
+      pc.ontrack = e => roomRef.child(fromId).once('value').then(snap => {
+        addVideoStream(fromId, e.streams[0], snap.val().name);
+        joinSound.play();
+      });
+    }
+
+    const pc = peerConnections[fromId];
+    if (data.type === 'offer') {
+      pc.setRemoteDescription(new RTCSessionDescription(data.sdp)).then(() => {
+        return pc.createAnswer();
+      }).then(answer => {
+        pc.setLocalDescription(answer);
+        signalRef.child(`${fromId}/${userId}`).push({ type: 'answer', sdp: answer });
+      });
+    } else if (data.type === 'answer') {
+      pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+    } else if (data.type === 'ice' && data.candidate) {
+      pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+    }
+  });
+};
+
+toggleMicBtn.onclick = () => {
+  micEnabled = !micEnabled;
+  localStream.getAudioTracks()[0].enabled = micEnabled;
+  toggleMicBtn.textContent = micEnabled ? 'Mute Mic' : 'Unmute Mic';
+};
+
+toggleCamBtn.onclick = () => {
+  camEnabled = !camEnabled;
+  localStream.getVideoTracks()[0].enabled = camEnabled;
+  toggleCamBtn.textContent = camEnabled ? 'Mute Cam' : 'Unmute Cam';
+};
+
+leaveMeetingBtn.onclick = () => {
+  roomRef.child(userId).remove();
+  for (let id in peerConnections) {
+    peerConnections[id].close();
+    removeVideoStream(id);
+  }
+  peerConnections = {};
+  removeVideoStream(userId);
+  if (localStream) localStream.getTracks().forEach(t => t.stop());
+
+  meetingArea.style.display = 'none';
+  startMeetingBtn.disabled = false;
+  toggleMicBtn.disabled = true;
+  toggleCamBtn.disabled = true;
+  leaveMeetingBtn.disabled = true;
+};
   </script>
 </body>
   </html>
