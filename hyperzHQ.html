@@ -121,6 +121,32 @@
         <p>Chats, meetings and tasks overview will appear here.</p>
         <ul id="onlineUsers"></ul>
       </div>
+      <!-- DASHBOARD ADD-ONS -->
+<div id="dashboard-widgets" style="padding: 1rem; color: white; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+
+  <!-- Live Clock -->
+  <div style="background: #2e2e2e; border-radius: 12px; padding: 1rem; box-shadow: 0 0 10px #6c4cff;">
+    <h3 style="margin: 0; font-size: 1.2rem;">Current Time</h3>
+    <p id="liveClock" style="font-size: 1.5rem; margin-top: 0.5rem;"></p>
+  </div>
+
+  <!-- Task Summary -->
+  <div style="background: #2e2e2e; border-radius: 12px; padding: 1rem; box-shadow: 0 0 10px #6c4cff;">
+    <h3 style="margin: 0; font-size: 1.2rem;">Task Summary</h3>
+    <p>Total: <span id="taskTotal">0</span></p>
+    <p>Completed: <span id="taskDone">0</span></p>
+    <p>Pending: <span id="taskPending">0</span></p>
+  </div>
+
+  <!-- Quick Links -->
+  <div style="background: #2e2e2e; border-radius: 12px; padding: 1rem; box-shadow: 0 0 10px #6c4cff;">
+    <h3 style="margin: 0; font-size: 1.2rem;">Quick Actions</h3>
+    <button onclick="scrollToSection('chatBox')" style="margin: 5px;">Open Chat</button>
+    <button onclick="scrollToSection('taskSection')" style="margin: 5px;">Add Task</button>
+    <button onclick="scrollToSection('meetingArea')" style="margin: 5px;">Go to Meeting</button>
+  </div>
+
+</div>
     </div>
 
     <div class="section" id="meeting">
@@ -300,6 +326,35 @@
         document.getElementById(id).classList.add("active");
       });
     });
+    // Live Clock
+function updateClock() {
+  const now = new Date();
+  const time = now.toLocaleTimeString();
+  const date = now.toLocaleDateString();
+  document.getElementById('liveClock').innerText = `${time} | ${date}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Scroll to section
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Task Summary from Firebase
+const taskRef = firebase.database().ref('tasks');
+taskRef.on('value', (snapshot) => {
+  let total = 0;
+  let done = 0;
+  snapshot.forEach((child) => {
+    total++;
+    if (child.val().done) done++;
+  });
+  document.getElementById('taskTotal').innerText = total;
+  document.getElementById('taskDone').innerText = done;
+  document.getElementById('taskPending').innerText = total - done;
+});
   </script>
 </body>
   </html>
