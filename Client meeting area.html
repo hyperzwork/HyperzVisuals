@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hyperz Visuals Client Meeting Portal</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #1e1e2f;
+    color: #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+  header {
+    background: #2a2a40;
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+    color: #a37eff;
+    font-weight: bold;
+    font-size: 1.5rem;
+    box-shadow: 0 0 10px #8f4fff55;
+  }
+  main {
+    flex: 1;
+    width: 90%;
+    max-width: 900px;
+    background: #292942;
+    border-radius: 12px;
+    margin: 1rem 0;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 0 30px #8f4fff88;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  video {
+    width: 100%;
+    background: black;
+    border-radius: 8px;
+  }
+  .videos {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .videos video {
+    flex: 1;
+    min-width: 45%;
+    height: 200px;
+  }
+  textarea {
+    width: 100%;
+    min-height: 80px;
+    background: #3a3a55;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 0.5rem;
+    resize: vertical;
+  }
+  input[type="file"] {
+    background: #3a3a55;
+    border-radius: 8px;
+    color: white;
+    padding: 0.4rem;
+    width: 100%;
+  }
+  button {
+    background: #8f4fff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  button:disabled {
+    background: #555;
+    cursor: not-allowed;
+  }
+  label {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .auth-container,
+  .meeting-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .chat-box {
+    height: 150px;
+    background: #22223b;
+    border-radius: 8px;
+    overflow-y: auto;
+    padding: 0.5rem;
+  }
+  .chat-message {
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+  }
+  .chat-message.self {
+    color: #8f4fff;
+    font-weight: bold;
+  }
+  .footer {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1rem;
+  }
+</style>
+</head>
+<body>
+
+<header>Hyperz Visuals Client Meeting Portal</header>
+
+<main>
+  <div class="auth-container" id="auth-container">
+    <label for="email">Email:</label>
+    <input type="email" id="email" autocomplete="username" placeholder="your.email@example.com" />
+    <label for="password">Password:</label>
+    <input type="password" id="password" autocomplete="current-password" placeholder="Password" />
+    <button id="btn-login">Login / Register</button>
+    <p id="auth-message" style="color:#f88; margin-top:0.5rem;"></p>
+  </div>
+
+  <div class="meeting-container" id="meeting-container" style="display:none;">
+    <div class="videos">
+      <video id="localVideo" autoplay muted playsinline></video>
+      <video id="remoteVideo" autoplay playsinline></video>
+    </div>
+
+    <button id="btn-startCall" disabled>Start Call</button>
+
+    <label>Chat</label>
+    <div class="chat-box" id="chat-box"></div>
+    <input type="text" id="chat-input" placeholder="Type a message..." disabled />
+
+    <label>Meeting Notes</label>
+    <textarea id="notes" placeholder="Write meeting notes here..." disabled></textarea>
+
+    <label>Upload Files</label>
+    <input type="file" id="file-upload" disabled />
+
+    <button id="btn-downloadNotes" disabled>Download Meeting Notes</button>
+  </div>
+</main>
+
+<div class="footer">Created by Hyperz Visuals | All rights reserved</div>
+
+<!-- Firebase Modular SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    onAuthStateChanged,
+  } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+  import {
+    getDatabase,
+    ref,
+    set,
+    push,
+    onChildAdded,
+    onValue,
+    get,
+  } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+  import {
+    getStorage,
+    ref as sRef,
+    uploadBytes,
+    getDownloadURL,
+  } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
+
+  // Your Firebase config (from user)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBVPwQE9ovzcYJMsGQnndyjYiZcNjpv4-k",
+    authDomain: "hyperzhq-f1910.firebaseapp.com",
+    databaseURL: "https://hyperzhq-f1910-default-rtdb.firebaseio.com",
+    projectId: "hyperzhq-f1910",
+    storageBucket: "hyperzhq-f1910.appspot.com",
+    messagingSenderId: "454289109507",
+    appId: "1:454289109507:web:4e6f0b4723145ac7591436"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+  const storage = getStorage(app);
+
+  // UI elements
+  const authContainer = document.getElementById("auth-container");
+  const meetingContainer = document.getElementById("meeting-container");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const btnLogin = document.getElementById("btn-login");
+  const authMessage = document.getElementById("auth-message");
+
+  const localVideo = document.getElementById("localVideo");
+  const remoteVideo = document.getElementById("remoteVideo");
+  const btnStartCall = document.getElementById("btn-startCall");
+  const chatBox = document.getElementById("chat-box");
+  const chatInput = document.getElementById("chat-input");
+  const notesArea = document.getElementById("notes");
+  const fileUpload = document.getElementById("file-upload");
+  const btnDownloadNotes = document.getElementById("btn-downloadNotes");
+
+  // Meeting vars
+  let localStream = null;
+  let peerConnection = null;
+  let roomId = null;
+  let userId = null;
+
+  // ICE servers config (Google STUN)
+  const servers = {
+    iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  };
+
+  // Util: generate random roomId (for demo, you can change to clientname or URL param)
+  function generateRoomId() {
+    return "room_" + Math.random().toString(36).substr(2, 9);
+  }
+
+  // UI Enable/Disable helpers
+  function setMeetingEnabled(enabled) {
+    btnStartCall.disabled = !enabled;
+    chatInput.disabled = !enabled;
+    notesArea.disabled = !enabled;
+    fileUpload.disabled = !enabled;
+    btnDownloadNotes.disabled = !enabled;
+  }
+
+  // Authentication flow (register or login)
+  btnLogin.onclick = async () => {
+    const email = emailInput.value.trim();
+    const pass = passwordInput.value.trim();
+    authMessage.textContent = "";
+
+    if (!email || !pass) {
+      authMessage.textContent = "Please enter email and password.";
+      return;
+    }
+
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch (err) {
+      if (err.code === "auth/user-not-found") {
+        try {
+          await createUserWithEmailAndPassword(auth, email, pass);
+        } catch (err2) {
+          authMessage.textContent = err2.message;
+        }
+      } else {
+        authMessage.textContent = err.message;
+      }
+    }
+  };
+
+  // On auth state changed
+  onAuthStateChanged(auth, async (user) => {
+    if (user
