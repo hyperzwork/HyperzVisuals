@@ -265,4 +265,93 @@
 
   // On auth state changed
   onAuthStateChanged(auth, async (user) => {
-    if (user
+    if (user) {
+      userId = user.uid;
+      authContainer.style.display = "none";
+      meetingContainer.style.display = "flex";
+      setMeetingEnabled(true);
+
+      roomId = generateRoomId(); // or replace with your custom room ID logic
+
+      // Load existing notes if any
+      const notesRef = ref(db, `meetings/${roomId}/notes`);
+      onValue(notesRef, (snapshot) => {
+        const val = snapshot.val();
+        if (val) notesArea.value = val;
+      });
+
+      // Sync notes
+      notesArea.addEventListener("input", () => {
+        set(notesRef, notesArea.value);
+      });
+
+      // Chat
+      const chatRef = ref(db, `meetings/${roomId}/chat`);
+      chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && chatInput.value.trim()) {
+          push(chatRef, {
+            sender: emailInput.value,
+            text: chatInput.value,
+            timestamp: Date.now(),
+          });
+          chatInput.value = "";
+        }
+      });
+
+      onChildAdded(chatRef, (data) => {
+        const msg = data.val();
+        const msgDiv = document.createElement("div");
+        msgDiv.className = "chat-message" + (msg.sender === emailInput.value ? " self" : "");
+        msgDiv.textContent = `${msg.sender}: ${msg.text}`;
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      });
+
+      // File upload
+      fileUpload.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const fileRef = sRef(storage, `meetings/${roomId}/files/${file.name}`);
+          await uploadBytes(fileRef, file);
+          const url = await getDownloadURL(fileRef);
+          const msg = {
+            sender: emailInput.value,
+            text: `Uploaded file: ${file.name} (${url})`,
+            timestamp: Date.now(),
+          };
+          push(chatRef, msg);
+        }
+      });
+
+      // Download notes
+      btnDownloadNotes.addEventListener("click", () => {
+        const blob = new Blob([notesArea.value], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `meeting-notes-${roomId}.txt`;
+        a.click();
+      });
+
+      // Start Call (dummy placeholder)
+      btnStartCall.addEventListener("click", async () => {
+        if (!localStream) {
+          try {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            localVideo.srcObject = localStream;
+            // Call setup logic would go here
+          } catch (err) {
+            alert("Failed to access camera/mic: " + err.message);
+          }
+        }
+      });
+
+    } else {
+      authContainer.style.display = "flex";
+      meetingContainer.style.display = "none";
+      setMeetingEnabled(false);
+    }
+  });
+</script>
+
+</body>
+</html>
